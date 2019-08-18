@@ -17,8 +17,8 @@ Powershell provides 2 builtin methods for running tasks in parallel, `Start-Job`
 (1..10) | % {
   start-job $work
 }
-get-job | wait-job
-get-job | receive-job
+while (get-job -hasmoredata $true) { get-job | receive-job }
+get-job | remove-job
 
 workflow test-workflow10 {
   param($work)
@@ -42,7 +42,7 @@ Now, let's have more fun by increasing the total number of `$work` to 100.
 (1..100) | % {
   start-job $work
 }
-get-job | wait-job
+while (get-job -hasmoredata $true) { get-job | receive-job }
 get-job | receive-job
 
 workflow test-workflow100 {
