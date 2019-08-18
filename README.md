@@ -32,10 +32,9 @@ workflow test-workflow10 {
 }
 test-workflow10 $work
 ```
-Both methods shorten the execution time to about 1 minute, Start-Job is slightly better than Workflow. Not ideal but already improved a lot. Although they look of similar efficiency, there are two differences worth pointing out.
+Both methods shorten the execution time to about 1 minute, Start-Job is slightly better than Workflow. Not ideal but already improved a lot. Although they look of similar efficiency, there is a significant difference.
 
-1. The `Start-Job` way won't display any output until all jobs complete. With `Workflow`, output displays whenever it occurs. Workflow is much more user friendly here. So I give +1 to `Workflow`.
-2. With `Start-Job`, it literally creates 10 concurrent Powershell processes to run the job. While Workflow only creates 6 processes on my laptop despite I define `-throttlelimit 10`. Based on my observation, the number won't go up no matter what value I give to `throttlelimit`. I suspect that Microsoft adds some protect here to prevent CPU over-commit. But it also make users unable to control how many CPU they want to utilize. I believe that's also why it's a bit slower than Start-Job. Start-Job wins +1 here.
+`Start-Job` literally creates 10 concurrent Powershell processes to run the job. While Workflow only creates 6 processes on my laptop despite I define `-throttlelimit 10`. Based on my observation, the number won't go up no matter what value I give to `throttlelimit`. I suspect that Microsoft adds some protect here to prevent CPU over-commit. But it also make users unable to control how many CPU they want to utilize. I believe that's also why it's a bit slower than Start-Job. Start-Job wins +1 here.
 
 Now, let's have more fun by increasing the total number of `$work` to 100.
 ```
@@ -43,7 +42,7 @@ Now, let's have more fun by increasing the total number of `$work` to 100.
   start-job $work
 }
 while (get-job -hasmoredata $true) { get-job | receive-job }
-get-job | receive-job
+get-job | remove-job
 
 workflow test-workflow100 {
   param($work)
@@ -61,12 +60,8 @@ This time `Start-Job` creates 100 concurrent Powershell processes which eventual
 
 Solution
 ===============
-The ideal method should provide the following features:
+The ideal method should not only allow customizing the total number of concurrent jobs, but also allow customizing the amount of workload in a job.
 
-1. allow user define the total number of concurrent jobs
-2. allow user define the amount of workload of one job
-3. display output promptly without waiting till the end
-
-For instance, let's say I have 10000 objects to handle. I want limit the concurrent jobs to 20 and limit number of objects per job to 100. So I totally need 100 (10000 / 100) jobs. Instead of making 100 jobs up and running together, I start 20 jobs initially and then monitor their status. Whenever a job completes, output its result and start a new job to keep 20 running jobs till all 100 complete.
+For instance, let's say I have 10000 objects to handle. I want limit the concurrent jobs to 20 and limit number of objects per job to 100. So I totally need 100 (10000 / 100) jobs. Instead of making 100 jobs up and running together, I start 20 jobs initially and then monitor their status. Whenever a job completes, output its result and start a new job to keep 20 running jobs till no more new job is required.
 
 This project, PPRunner, is a simple Powershell function supporting this logic.
