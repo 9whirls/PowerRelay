@@ -56,7 +56,7 @@ workflow test-workflow100 {
 }
 test-workflow100 $work
 ```
-This time `Start-Job` creates 100 concurrent Powershell processes which eventually causes my laptop out of memory. On the `Workflow` side, it still runs the heavy load steadily with 6 concurrent processes and uses a moderate amount of memory. This is really not what I expect. What I need is a way to keep the machine running with the highest computing power to get the job done ASAP. 
+This time `Start-Job` creates 100 concurrent Powershell processes which eventually causes my laptop out of memory. On the other side, `Workflow` still runs the heavy load steadily with 6 concurrent processes and uses a moderate amount of memory. In fact neither one does what I expect. What I need is a way to keep the machine running with the highest computing power to get the job done ASAP. 
 
 Solution
 ===============
