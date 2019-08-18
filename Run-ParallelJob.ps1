@@ -23,7 +23,7 @@ Function Run-ParallelJob {
     )]
     $job = 10
   )
-  $total = $targets.count
+  $total = $target.count
   "Total objects to handle: $total" | write-verbose
   "Number of objects handled in a single job: $batch" | write-verbose
   if ($total % $batch) {
@@ -39,7 +39,7 @@ Function Run-ParallelJob {
       $start = $i * $batch + 1
       $end = ( $i + 1 ) * $batch
       $end = ($end, $total | measure -minimum).minimum
-      start-job -scriptblock $script -argumentlist (,$targets[$start..$end]) -name "job-$i" | 
+      start-job -scriptblock $script -argumentlist (,$target[$start..$end]) -name "job-$i" | 
         out-string | write-verbose
       $i += 1
     }
