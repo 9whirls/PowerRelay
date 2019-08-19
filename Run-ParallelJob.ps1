@@ -36,8 +36,8 @@ Function Run-ParallelJob {
   $i = 0
   while ($i -lt $totaljob) {
     while ((get-job -state running).count -lt $job -and $i * $batch -lt $total) {
-      $start = $i * $batch + 1
-      $end = ( $i + 1 ) * $batch
+      $start = $i * $batch
+      $end = ( $i + 1 ) * $batch - 1
       $end = ($end, $total | measure -minimum).minimum
       start-job -scriptblock $script -argumentlist (,$target[$start..$end]) -name "job-$i" | 
         out-string | write-verbose
