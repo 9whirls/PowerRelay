@@ -14,14 +14,14 @@ Function Run-ParallelJob {
     $script,
     
     [parameter(
-      HelpMessage="Number of objects to be handled in a single job"
-    )]
-    $batch = 10,
-    
-    [parameter(
       HelpMessage="Maximum number of concurrent jobs"
     )]
-    $job = 10
+    $job = ((gwmi Win32_ComputerSystem).NumberOfProcessors * 2 - 1),
+    
+    [parameter(
+      HelpMessage="Number of objects to be handled in a single job"
+    )]
+    [int] $batch = ($target.count / $job)
   )
   $total = $target.count
   "Total objects to handle: $total" | write-verbose
