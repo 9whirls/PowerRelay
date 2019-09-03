@@ -2,6 +2,10 @@ Function Get-NumberOfCpu {
   return (gwmi Win32_ComputerSystem).NumberOfProcessors
 }
 
+Function Get-MemoryMB {
+  return (Get-WmiObject Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).sum / 1MB
+}
+
 Function Run-ParallelJob {
   [CmdletBinding()]
   param(
@@ -61,11 +65,17 @@ Function Run-ParallelJob {
   $TotalAvailableCPUTime = [math]::round($duration.totalseconds * (Get-NumberOfCpu), 2)
   $TotalUsedCPUTime = [math]::round(($childProc | measure-object -sum cpu).sum, 2)
   $CPUEfficiency = [math]::round($TotalUsedCPUTime / $TotalAvailableCPUTime * 100, 2)
+  $TotalMemory = Get-MemoryMB
+  $TotalUsedMemory = [math]::round(($childProc | measure-object -sum workingset).sum / 1MB, 2)
+  $MemoryEfficiency = [math]::round($TotalUsedMemory / $TotalMemory * 100, 2)
   "Execution ends at $endTime" | write-verbose
   "Total execution time $duration" | write-verbose 
   "Total availabe CPU time $TotalAvailableCPUTime seconds" | write-verbose
   "Total used CPU time $TotalUsedCPUTime seconds" | write-verbose
   "CPU efficiency $CPUEfficiency %" | write-verbose
+  "Total availabe memory $TotalMemory MB" | write-verbose
+  "Total used memory $TotalUsedMemory MB" | write-verbose
+  "Memory efficiency $MemoryEfficiency %" | write-verbose
 }
 
 # A simple example
