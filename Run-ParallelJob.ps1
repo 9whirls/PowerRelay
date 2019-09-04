@@ -1,5 +1,5 @@
 Function Get-NumberOfCpu {
-  return (gwmi Win32_ComputerSystem).NumberOfProcessors
+  return (gwmi Win32_ComputerSystem).NumberOfLogicalProcessors
 }
 
 Function Get-MemoryMB {
