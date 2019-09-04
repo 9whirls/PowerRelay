@@ -32,15 +32,23 @@ Function Run-ParallelJob {
     [int] $batch = ($target.count / $job)
   )
   $total = $target.count
-  "Total objects to handle: $total" | write-verbose
-  "Number of objects handled in a single job: $batch" | write-verbose
+  
   if ($total % $batch) {
     $totaljob = [math]::floor($total / $batch) + 1
   } else {
     $totaljob = $total / $batch
   }
-  "Total jobs to run: $totaljob" | write-verbose
-  "Maximum number of concurrent jobs: $job" | write-verbose
+
+  $prop = [ordered]@{
+    TotalObjects = $total
+    ObjectsInOneJob = $batch
+    TotalJobs = $totaljob
+    ConcurrentJob = $job
+  } 
+  
+  $info = New-Object PSObject -Property $prop
+  $info | ft | out-string | write-verbose
+
   $startTime = get-date
   "Execution starts at $startTime" | write-verbose
   $i = 0
@@ -60,7 +68,10 @@ Function Run-ParallelJob {
   }
   while (get-job -hasmoredata $true) { get-job | receive-job }
   get-job | remove-job
+  
   $endtime = get-date
+  "Execution ends at $startTime" | write-verbose
+  
   $duration = $endTime - $startTime
   $TotalAvailableCPUTime = [math]::round($duration.totalseconds * (Get-NumberOfCpu), 2)
   $TotalUsedCPUTime = [math]::round(($childProc | measure-object -sum cpu).sum, 2)
@@ -68,14 +79,18 @@ Function Run-ParallelJob {
   $TotalMemory = Get-MemoryMB
   $TotalUsedMemory = [math]::round(($childProc | measure-object -sum workingset).sum / 1MB, 2)
   $MemoryEfficiency = [math]::round($TotalUsedMemory / $TotalMemory * 100, 2)
-  "Execution ends at $endTime" | write-verbose
-  "Total execution time $duration" | write-verbose 
-  "Total availabe CPU time $TotalAvailableCPUTime seconds" | write-verbose
-  "Total used CPU time $TotalUsedCPUTime seconds" | write-verbose
-  "CPU efficiency $CPUEfficiency %" | write-verbose
-  "Total availabe memory $TotalMemory MB" | write-verbose
-  "Total used memory $TotalUsedMemory MB" | write-verbose
-  "Memory efficiency $MemoryEfficiency %" | write-verbose
+  
+  $prop += [ordered]@{
+    TotalCPUTime = $TotalAvailableCPUTime
+    TotalUsedCPUTime = $TotalUsedCPUTime
+    CPUEfficiency = $CPUEfficiency
+    TotalMemory = $TotalMemory
+    TotalUsedMemory = $TotalUsedMemory
+    MemoryEfficiency = $MemoryEfficiency
+  }
+
+  $info = New-Object PSObject -Property $prop
+  $info | ft | out-string | write-verbose
 }
 
 # A simple example
