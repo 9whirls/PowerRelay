@@ -70,7 +70,7 @@ Function Run-ParallelJob {
   get-job | remove-job
   
   $endtime = get-date
-  "Execution ends at $startTime" | write-verbose
+  "Execution ends at $endTime" | write-verbose
   
   $duration = $endTime - $startTime
   $TotalAvailableCPUTime = [math]::round($duration.totalseconds * (Get-NumberOfCpu), 2)
