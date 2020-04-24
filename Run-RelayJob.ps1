@@ -6,7 +6,7 @@ Function Get-MemoryMB {
   return (Get-WmiObject Win32_PhysicalMemory | Measure-Object -Property Capacity -Sum).sum / 1MB
 }
 
-Function Run-ParallelJob {
+Function Run-RelayJob {
   [CmdletBinding()]
   param(
     [parameter(
@@ -95,9 +95,9 @@ Function Run-ParallelJob {
 
 # A simple example
 $script = { (1..$($args[0].count)) | % { gci c:\windows\system32\a*.exe -ea silentlycontinue } }
-Run-ParallelJob -target (1..10) -script $script -batch 3 -job 5 -verbose
+Run-RelayJob -target (1..10) -script $script -batch 3 -job 5 -verbose
 
 # Another example
 $dll = gci c:\windows\system32\*.dll -ea silentlycontinue | select fullname
 $script = { get-filehash $args[0].fullname }
-Run-ParallelJob -target $dll -script $script -batch 100 -verbose
+Run-RelayJob -target $dll -script $script -batch 100 -verbose
