@@ -1,5 +1,5 @@
-# pprunner
-Parallel Powershell Runner
+# PowerRalay
+Run relay jobs, parallel and sequential combined together, in Powershell
 
 Motivation
 ===============
@@ -62,6 +62,6 @@ Solution
 ===============
 The ideal method should not only allow customizing the total number of concurrent jobs, but also allow customizing the amount of workload in a job.
 
-For instance, let's say I have 10000 objects to handle. I want limit the concurrent jobs to 20 and limit number of objects per job to 100. So I totally need 100 (10000 / 100) jobs. Instead of making 100 jobs up and running together, I start 20 jobs initially and then monitor their status. Whenever a job completes, output its result and start a new job to keep 20 running jobs till no more new job is required.
+For instance, let's say I have 10000 objects to handle. I want limit the concurrent jobs to 20 and limit number of objects per job to 100. So I totally need 100 (10000 / 100) jobs. Instead of making 100 jobs up and running together, I start 20 jobs initially and then monitor their status. Whenever a job completes, output its result and start a new job to keep 20 running jobs till no more new job is required. The whole procedure is like a raley race.
 
-This project, PPRunner, is a simple Powershell function supporting this logic.
+This project, PowerRalay, is a simple Powershell function supporting this logic.
