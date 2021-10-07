@@ -1,6 +1,11 @@
 # PowerRelay
 Run relay jobs, parallel and sequential combined together, in Powershell
 
+To install this module from PSGallery, run the command below
+```
+Install-Module -Name PowerRelay
+```
+
 Motivation
 ===============
 It's common to handle a large number of objects in a Powershell script. It is also usually very very time consuming. Let's have a look at the following example. The `$work` variable is a script block which does one simple job which is to retrieve all DLL files in C:\Windows\System32. Though super easy, it does require some time to run, especially on my outdated laptop at home.
