@@ -65,3 +65,16 @@ The ideal method should not only allow customizing the total number of concurren
 For instance, let's say I have 10000 objects to handle. I want limit the concurrent jobs to 20 and limit number of objects per job to 100. So I totally need 100 (10000 / 100) jobs. Instead of making 100 jobs up and running together, I start 20 jobs initially and then monitor their status. Whenever a job completes, output its result and start a new job to keep 20 running jobs till no more new job is required. The whole procedure is like a relay race.
 
 This project, PowerRelay, is a simple Powershell function supporting this logic.
+
+Example
+==============
+```
+# A simple example
+$script = { (1..$($args[0].count)) | % { gci c:\windows\system32\a*.exe -ea silentlycontinue } }
+Start-RelayJob -target (1..10) -script $script -batch 3 -job 5 -verbose
+
+# Another example
+$dll = gci c:\windows\system32\*.dll -ea silentlycontinue | select fullname
+$script = { get-filehash $args[0].fullname }
+Start-RelayJob -target $dll -script $script -batch 1000 -verbose
+```
